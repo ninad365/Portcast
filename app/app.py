@@ -25,7 +25,6 @@ else:
     }
     es.indices.put_mapping(index="movies", body=mapping)
 
-
 app = FastAPI()
 
 @app.get("/get")
