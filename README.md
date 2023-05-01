@@ -1,15 +1,17 @@
-Tech stack:
+# Tech stack:
 
 1.FastAPI
 
 2.Elasticsearch
 
-3.docker
+3.Docker
 
-Steps to run
+# Steps to run
 
-Pull code or download the code(It is public repo)
+Pull code or download the code.
 
-If you have docker on your system then just run single command
+Install docker in your system.
 
-docker-compose up --build
+Open folder in terminal and run the following command:
+
+docker-compose up

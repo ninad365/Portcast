@@ -2,11 +2,13 @@ import string
 import json
 import requests
 from typing import Union
-from fastapi import FastAPI
 from elasticsearch import Elasticsearch
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from collections import Counter
 
-es = Elasticsearch("http://localhost:9200", http_auth=("ninad1", "ninad123"))
+app = FastAPI()
+es = Elasticsearch(["http://localhost:9200"])
 
 # Check if the indices exist / create a new one if it doesnt
 if es.indices.exists(index="movies"):
@@ -25,7 +27,17 @@ else:
     }
     es.indices.put_mapping(index="movies", body=mapping)
 
-app = FastAPI()
+@app.get("/")
+def hello_world():
+    return {"Hello": "World"}
+
+@app.get("/elasticsearch/info")
+def elasticsearch_details():
+    return JSONResponse(dict(es.info()))
+
+@app.get("/elasticsearch/health")
+def elasticsearch_health():
+    return JSONResponse(dict(es.cluster.health()))
 
 @app.get("/get")
 def read_root():
@@ -124,26 +136,3 @@ def response_to_definition(response):
     data = json.loads(response)
     meanings = data[0]["meanings"][0]["definitions"][0]["definition"]
     return meanings
-
-# @app.get("/dictionary")
-# def dictionary():
-#     # word = "the"
-#     # url = "https://api.dictionaryapi.dev/api/v2/entries/en/hello"
-#     # response = requests.get(url)
-#     # return {"definition":response.text}
-#     response = es.search(
-#         index="movies",
-#         body= {
-#             "size": 0,
-#             "aggs": {
-#                 "top_terms": {
-#                     "terms": {
-#                         "field": "paragraph",
-#                     }
-#                 }
-#             }
-#         }
-#     )
-
-#     # result = response["aggregations"]["most_frequent_words"]["buckets"]
-#     return {"response":response}
