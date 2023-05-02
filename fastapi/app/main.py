@@ -8,14 +8,14 @@ from fastapi.responses import JSONResponse
 from collections import Counter
 
 app = FastAPI()
-es = Elasticsearch(["http://localhost:9200"])
+es = Elasticsearch(["http://elasticsearch:9200"])
 
 # Check if the indices exist / create a new one if it doesnt
-if es.indices.exists(index="movies"):
-    print("index movies exist")
+if es.indices.exists(index="paragraphs"):
+    print("index paragraphs exist")
 else:
-    print("index movies does not exist - creating new")
-    es.indices.create(index="movies")
+    print("index paragraphs does not exist - creating new")
+    es.indices.create(index="paragraphs")
 
     mapping = {
         "properties": {
@@ -25,7 +25,7 @@ else:
             }
         }
     }
-    es.indices.put_mapping(index="movies", body=mapping)
+    es.indices.put_mapping(index="paragraphs", body=mapping)
 
 @app.get("/")
 def hello_world():
@@ -63,23 +63,21 @@ def read_root():
         json.dump(data, f)
 
     json1 = {"paragraph": paragraph}
-    es.index(index="movies", document=json1)
+    es.index(index="paragraphs", document=json1)
     return json1
 
+# Retrives paragraph with 50 sentence
 def _fetch_paragraph():
     url = "http://metaphorpsum.com/paragraphs/1/50"
     response = requests.get(url)
     response.raise_for_status()
     return response.text
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
+# URL- http://{IP}:8000/search?query={words}&operator={operator}
 @app.get("/search")
 def search(query: str, operator):
     response = es.search(
-        index="movies",
+        index="paragraphs",
         body={
             "query": {
                 "simple_query_string" : {
@@ -99,7 +97,7 @@ def search(query: str, operator):
 
 @app.get("/count")
 def count():
-    result = es.search(index="movies", body={"query":{"match_all":{}}})
+    result = es.search(index="paragraphs", body={"query":{"match_all":{}}})
     count = result["hits"]["total"]["value"]
     return {"count":count}
 
