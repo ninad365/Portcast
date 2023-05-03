@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from collections import Counter
 
 app = FastAPI()
-es = Elasticsearch(["http://elasticsearch:9200"])
+es = Elasticsearch(["http://elasticsearch:9200/"])
 
 # Check if the indices exist / create a new one if it doesnt
 if es.indices.exists(index="paragraphs"):
