@@ -116,9 +116,7 @@ def dictionary():
 
     definitions = {}
     for i in top_10:
-        print(i)
         url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + i[0]
-        print(url)
 
         try:
             response = requests.get(url)
@@ -127,7 +125,6 @@ def dictionary():
         except:
             definitions[i[0]] = "Could not fetch definition"
 
-    print(definitions)
     return {"response":top_10, "def":definitions}
 
 def response_to_definition(response):
